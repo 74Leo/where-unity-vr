@@ -1,19 +1,28 @@
 using UnityEngine;
 
+[RequireComponent(typeof(Camera))]
 public class FollowCamPlayer : MonoBehaviour
 {
+    [Tooltip("Transform du joueur à suivre")]
     public Transform target;
-    public float smoothSpeed = 0.125f;
-    public Vector3 offset;
+
+    [Tooltip("Temps (en secondes) que met la caméra pour rattraper la cible — plus petit,  plus réactif")]
+    public float smoothTime = 0.15f;
+
+    [Tooltip("Décalage de la caméra par rapport à la position du joueur (ex: (0,0,-10) pour une 2D)")]
+    public Vector3 offset = new Vector3(0f, 0f, -10f);
+
+    private Vector3 velocity = Vector3.zero;
 
     void LateUpdate()
     {
-        if (target != null)
-        {
-            Vector3 desiredPosition = target.position + offset;
-            Vector3 smoothedPosition = Vector3.Lerp(transform.position, desiredPosition, smoothSpeed);
-            transform.position = smoothedPosition;
-        }
+        if (target == null) return;
+
+        Vector3 desiredPosition = target.position + offset;
+
+        desiredPosition.z = offset.z;
+
+        transform.position = Vector3.SmoothDamp(transform.position, desiredPosition, ref velocity, smoothTime);
     }
 }
 /*

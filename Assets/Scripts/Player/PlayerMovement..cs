@@ -2,11 +2,14 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
+  [Tooltip("Vitesse de déplacement")]
   public float speed = 5f;
 
-  public bool gravityEnabled = false;
-  public float gravityScaleWhenEnabled = 1f;
+  [Tooltip("Gravity scale appliquée")]
+  public float gravityScale = 0f;
 
+  [Tooltip("Bloquer la rotation due à la physique")]
+  public bool freezeRotation = true;
 
   private Rigidbody2D rb;
   private Vector2 movement;
@@ -14,20 +17,27 @@ public class PlayerMovement : MonoBehaviour
   void Start()
   {
     rb = GetComponent<Rigidbody2D>();
+    if (rb == null)
+    {
+      Debug.LogError("[PlayerMovement] Rigidbody2D introuvable — script désactivé.");
+      enabled = false;
+      return;
+    }
 
-    rb.freezeRotation = true;
-    rb.gravityScale = gravityEnabled ? gravityScaleWhenEnabled : 0f;
+    rb.constraints = freezeRotation ? RigidbodyConstraints2D.FreezeRotation : RigidbodyConstraints2D.None;
+    rb.gravityScale = gravityScale;
   }
 
   void Update()
   {
+
     movement.x = Input.GetAxisRaw("Horizontal");
     movement.y = Input.GetAxisRaw("Vertical");
 
     if (movement.sqrMagnitude > 1f)
-      movement = movement.normalized;
+    movement = movement.normalized;
 
-    float targetGravity = gravityEnabled ? gravityScaleWhenEnabled : 0f;
+    float targetGravity = gravityScale;
     if (!Mathf.Approximately(rb.gravityScale, targetGravity))
       rb.gravityScale = targetGravity;
   }
