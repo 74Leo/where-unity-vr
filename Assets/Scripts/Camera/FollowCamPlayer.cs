@@ -24,6 +24,8 @@ public class FollowCamPlayer : MonoBehaviour
 
         transform.position = Vector3.SmoothDamp(transform.position, desiredPosition, ref velocity, smoothTime);
     }
+
+
 }
 /*
 {
