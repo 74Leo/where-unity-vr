@@ -14,6 +14,8 @@ public class PlayerMovement : MonoBehaviour
   private Rigidbody2D rb;
   private Vector2 movement;
 
+  public Animator animator;
+
   void Start()
   {
     rb = GetComponent<Rigidbody2D>();
@@ -34,8 +36,12 @@ public class PlayerMovement : MonoBehaviour
     movement.x = Input.GetAxisRaw("Horizontal");
     movement.y = Input.GetAxisRaw("Vertical");
 
+    animator.SetFloat("Horizontal", movement.x);
+    animator.SetFloat("Vertical", movement.y);
+    animator.SetFloat("Speed", movement.sqrMagnitude);
+
     if (movement.sqrMagnitude > 1f)
-    movement = movement.normalized;
+      movement = movement.normalized;
 
     float targetGravity = gravityScale;
     if (!Mathf.Approximately(rb.gravityScale, targetGravity))
