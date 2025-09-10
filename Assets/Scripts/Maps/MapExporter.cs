@@ -61,7 +61,7 @@ public class MapExporter : MonoBehaviour
         tex.ReadPixels(new Rect(0, 0, outWidth, outHeight), 0, 0);
         tex.Apply();
 
-        string folder = Path.Combine(Application.dataPath, "images");
+        string folder = Path.Combine(Application.dataPath, "Images");
         if (!Directory.Exists(folder))
             Directory.CreateDirectory(folder);
 

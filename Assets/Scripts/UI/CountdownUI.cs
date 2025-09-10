@@ -11,6 +11,10 @@ public class CountdownUI : MonoBehaviour
     public TMP_Text timerText;
     public Image timerFill;
 
+    [Header("Style du texte")]
+    public TMP_FontAsset countdownFont;
+    public Color countdownColor = Color.white;
+
     [Header("Référence du joueur")]
     public Transform player;
 
@@ -19,6 +23,14 @@ public class CountdownUI : MonoBehaviour
 
     void Start()
     {
+        if (timerText != null)
+        {
+            if (countdownFont != null)
+                timerText.font = countdownFont;
+
+            timerText.color = countdownColor;
+        }
+        
         StartCountdown();
     }
 
