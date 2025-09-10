@@ -11,6 +11,9 @@ public class CountdownUI : MonoBehaviour
     public TMP_Text timerText;
     public Image timerFill;
 
+    [Header("Référence du joueur")]
+    public Transform player;
+
     private float timeLeft;
     private bool isRunning = false;
 
@@ -29,6 +32,13 @@ public class CountdownUI : MonoBehaviour
         {
             timeLeft = 0f;
             isRunning = false;
+
+            if (player != null)
+            {
+                player.position = Vector3.zero;
+            }
+
+            StartCountdown();
         }
 
         UpdateUI();

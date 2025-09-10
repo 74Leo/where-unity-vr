@@ -131,7 +131,7 @@ GameObject:
   - component: {fileID: 30735443}
   - component: {fileID: 30735442}
   - component: {fileID: 30735444}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Box3
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -1326,9 +1326,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: af1d9c37f015c5b4688a58ba91b60cb2, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  duration: 120
+  duration: 30
   timerText: {fileID: 1224369372}
   timerFill: {fileID: 2076370941}
+  player: {fileID: 1556157962}
 --- !u!4 &172921427
 Transform:
   m_ObjectHideFlags: 0
@@ -1512,7 +1513,7 @@ GameObject:
   - component: {fileID: 387446653}
   - component: {fileID: 387446652}
   - component: {fileID: 387446654}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Wall
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -7381,7 +7382,7 @@ GameObject:
   - component: {fileID: 431776546}
   - component: {fileID: 431776548}
   - component: {fileID: 431776547}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Ground
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -32461,7 +32462,7 @@ GameObject:
   - component: {fileID: 656638841}
   - component: {fileID: 656638840}
   - component: {fileID: 656638842}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Box2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -33594,7 +33595,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8450d257031867d4d8b47bbe9b0a2e61, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  levelToLoad: map-level-2
+  levelToLoad: MainMenu
 --- !u!61 &774243686
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -33667,7 +33668,7 @@ GameObject:
   - component: {fileID: 858021133}
   - component: {fileID: 858021135}
   - component: {fileID: 858021134}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Window
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -34374,7 +34375,7 @@ GameObject:
   - component: {fileID: 886150086}
   - component: {fileID: 886150088}
   - component: {fileID: 886150087}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Other
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -34901,7 +34902,7 @@ GameObject:
   - component: {fileID: 1110275814}
   - component: {fileID: 1110275816}
   - component: {fileID: 1110275815}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: End
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -35225,6 +35226,56 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1224369370}
   m_CullTransparentMesh: 1
+--- !u!1 &1280368643
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 1280368645}
+  - component: {fileID: 1280368644}
+  m_Layer: 0
+  m_Name: MapExporter
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &1280368644
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1280368643}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 308de41c517194f478c50b6b0f11bcd8, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mapRoot: {fileID: 158223665}
+  cullingMask:
+    serializedVersion: 2
+    m_Bits: 256
+  outWidth: 1920
+  outHeight: 1080
+--- !u!4 &1280368645
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1280368643}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: 25.639372, y: 16.187653, z: -10.374184}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!1 &1320027348
 GameObject:
   m_ObjectHideFlags: 0
@@ -35341,7 +35392,7 @@ GameObject:
   - component: {fileID: 1385400454}
   - component: {fileID: 1385400453}
   - component: {fileID: 1385400455}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Ladder
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -36138,7 +36189,7 @@ GameObject:
   - component: {fileID: 1484588948}
   - component: {fileID: 1484588947}
   - component: {fileID: 1484588949}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Chest
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -37093,7 +37144,7 @@ GameObject:
   - component: {fileID: 1806419309}
   - component: {fileID: 1806419308}
   - component: {fileID: 1806419310}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Vase
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -38218,7 +38269,7 @@ GameObject:
   - component: {fileID: 1827599539}
   - component: {fileID: 1827599541}
   - component: {fileID: 1827599540}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Door2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -38406,7 +38457,7 @@ GameObject:
   - component: {fileID: 1841604174}
   - component: {fileID: 1841604173}
   - component: {fileID: 1841604175}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Box
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -40171,7 +40222,7 @@ GameObject:
   - component: {fileID: 1940508630}
   - component: {fileID: 1940508632}
   - component: {fileID: 1940508631}
-  m_Layer: 0
+  m_Layer: 8
   m_Name: Door
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -40603,3 +40654,4 @@ SceneRoots:
   - {fileID: 172921427}
   - {fileID: 2089457167}
   - {fileID: 1463873356}
+  - {fileID: 1280368645}
