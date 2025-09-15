@@ -18,6 +18,10 @@ public class CountdownUI : MonoBehaviour
     [Header("Référence du joueur")]
     public Transform player;
 
+    [Header("Position de respawn")]
+    [Tooltip("Position où le joueur sera placé quand le chrono arrive à 0")]
+    public Vector3 respawnPosition = new Vector3(5f, 3f, 6f);
+
     private float timeLeft;
     private bool isRunning = false;
 
@@ -47,7 +51,7 @@ public class CountdownUI : MonoBehaviour
 
             if (player != null)
             {
-                player.position = Vector3.zero;
+                player.position = respawnPosition;
             }
 
             StartCountdown();

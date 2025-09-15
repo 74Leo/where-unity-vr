@@ -1332,6 +1332,7 @@ MonoBehaviour:
   countdownFont: {fileID: 11400000, guid: fa58d69fbde76f0408187698ccdc43bb, type: 2}
   countdownColor: {r: 1, g: 1, b: 1, a: 1}
   player: {fileID: 1556157962}
+  respawnPosition: {x: 5, y: 3, z: 6}
 --- !u!4 &172921427
 Transform:
   m_ObjectHideFlags: 0
