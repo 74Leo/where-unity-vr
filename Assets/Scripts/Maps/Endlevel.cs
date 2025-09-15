@@ -1,23 +1,57 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
+using System.Collections;
 
-[RequireComponent(typeof(Collider2D))]
 public class EndLevel : MonoBehaviour
 {
-    public string levelToLoad;
+    [Tooltip("Nom de la scène cible")]
+    public string targetSceneName;
 
-    void Reset()
+    [Tooltip("Bloque les retriggers pendant le chargement.")]
+    public bool oneShot = true;
+
+    bool used = false;
+
+    private void OnTriggerEnter2D(Collider2D other)
     {
-        var col = GetComponent<Collider2D>();
-        col.isTrigger = true;
+        if (used && oneShot) return;
+        if (!other.CompareTag("Player")) return;
+
+        used = true;
+        StartCoroutine(LoadSceneWithFade());
     }
 
-    private void OnTriggerEnter2D(Collider2D collision)
+    IEnumerator LoadSceneWithFade()
     {
-        if (collision.CompareTag("Player"))
+        if (string.IsNullOrEmpty(targetSceneName))
         {
-            Debug.Log("Le joueur a terminé le niveau !");
-            SceneManager.LoadScene(levelToLoad);
+            Debug.LogError("[EndLevel] targetSceneName est vide.");
+            used = false;
+            yield break;
         }
+
+        if (FadeScreen.Instance != null)
+            yield return FadeScreen.Instance.FadeOut();
+
+        AsyncOperation op = SceneManager.LoadSceneAsync(targetSceneName, LoadSceneMode.Single);
+        op.allowSceneActivation = false;
+
+        while (op.progress < 0.9f)
+            yield return null;
+
+        if (FadeScreen.Instance != null)
+            FadeScreen.Instance.SetAlpha(1f);
+
+        op.allowSceneActivation = true;
+        while (!op.isDone)
+            yield return null;
+
+        yield return null;
+        yield return new WaitForEndOfFrame();
+
+        if (FadeScreen.Instance != null)
+            yield return FadeScreen.Instance.FadeIn();
+
+        if (!oneShot) used = false;
     }
 }

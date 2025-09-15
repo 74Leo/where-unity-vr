@@ -12,6 +12,9 @@ EditorBuildSettings:
     path: Assets/Scenes/map-level-1.unity
     guid: 8a280c30869f9c049b517f84538328a9
   - enabled: 1
+    path: Assets/Scenes/map-level-2.unity
+    guid: ff789ce344f0f624788fa66876c74963
+  - enabled: 1
     path: Assets/Scenes/Credits.unity
     guid: 6915f7187cf4b2f4289ee884e9be53f0
   - enabled: 0

@@ -2,6 +2,8 @@ using UnityEngine;
 
 public class PlayerMovement : MonoBehaviour
 {
+  [Header("Déplacements")]
+
   [Tooltip("Vitesse de déplacement")]
   public float speed = 5f;
 
@@ -14,6 +16,7 @@ public class PlayerMovement : MonoBehaviour
   private Rigidbody2D rb;
   private Vector2 movement;
 
+  [Header("Animations")]
   public Animator animator;
 
   void Start()
