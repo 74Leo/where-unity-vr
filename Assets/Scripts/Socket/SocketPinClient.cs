@@ -1,26 +1,26 @@
 using System;
-using System.Collections;
 using System.Collections.Generic;
-using System.Threading.Tasks;
 using UnityEngine;
+using UnityEngine.UI;
+using TMPro;
 using SocketIOClient;
 
 public class SocketPinClient : MonoBehaviour
 {
     [Header("Socket.IO")]
     public string serverUrl = "http://localhost:3001";
-
-    [Header("Debug / UI")]
-    public bool logPin = true;
-
-    public event Action<string> OnPinReceived;
+    
+    [Header("UI")]
+    public Text pinText;
+    public TextMeshProUGUI playerCountText;
 
     private SocketIOClient.SocketIO client;
     private bool connected = false;
-    private string currentPin;
 
-    IEnumerator Start()
+    async void Start()
     {
+        Debug.Log("[SocketPinClient] Initialisation du client Socket.IO vers: " + serverUrl);
+        
         client = new SocketIOClient.SocketIO(serverUrl, new SocketIOClient.SocketIOOptions
         {
             Transport = SocketIOClient.Transport.TransportProtocol.WebSocket
@@ -28,173 +28,141 @@ public class SocketPinClient : MonoBehaviour
 
         client.OnConnected += (s, e) =>
         {
-            Debug.Log("[SocketPinClient] Connected to server.");
+            Debug.Log("[SocketPinClient] ✅ Connecté au serveur");
             connected = true;
+            RequestPin();
         };
 
         client.OnDisconnected += (s, e) =>
         {
-            Debug.LogWarning("[SocketPinClient] Disconnected from server.");
+            Debug.LogWarning("[SocketPinClient] ❌ Déconnecté du serveur");
             connected = false;
+            UpdatePinText("PIN: ----");
         };
 
-        client.On("room:created", response =>
+        client.On("room:players", HandleRoomPlayers);
+        client.On("room:created", HandleRoomCreated);
+        Debug.Log("[SocketPinClient] Écouteurs d'événements configurés");
+
+        try
         {
-            try
-            {
-                var dict = response.GetValue<Dictionary<string, object>>();
-                if (dict != null && dict.ContainsKey("roomId"))
-                {
-                    HandlePin(dict["roomId"]?.ToString());
-                    return;
-                }
-
-                var raw = response.ToString();
-                HandlePin(raw);
-            }
-            catch (Exception ex)
-            {
-                Debug.LogWarning("[SocketPinClient] room:created handler failed: " + ex.Message);
-            }
-        });
-
-        client.On("room-created", response =>
-        {
-            try
-            {
-                var dict = response.GetValue<Dictionary<string, object>>();
-                if (dict != null && dict.ContainsKey("roomId"))
-                {
-                    HandlePin(dict["roomId"]?.ToString());
-                    return;
-                }
-                HandlePin(response.ToString());
-            }
-            catch (Exception ex)
-            {
-                Debug.LogWarning("[SocketPinClient] room-created handler failed: " + ex.Message);
-            }
-        });
-
-        var connectTask = client.ConnectAsync();
-        while (!connectTask.IsCompleted) yield return null;
-
-        if (connectTask.IsFaulted)
-        {
-            Debug.LogError("[SocketPinClient] ConnectAsync failed: " + connectTask.Exception?.Flatten().Message);
-            yield break;
+            Debug.Log("[SocketPinClient] Tentative de connexion...");
+            await client.ConnectAsync();
         }
-
-        RequestPinFromServer();
+        catch (Exception ex)
+        {
+            Debug.LogError("[SocketPinClient] ❌ Erreur de connexion: " + ex.Message);
+            UpdatePinText("PIN: ERREUR");
+        }
     }
 
-    private void RequestPinFromServer()
+    private void HandleRoomCreated(SocketIOResponse response)
     {
-        if (client == null || !connected)
+        Debug.Log("[SocketPinClient] 📨 Événement room créé reçu");
+        try
         {
-            Debug.LogWarning("[SocketPinClient] Client non connecté.");
+            var dict = response.GetValue<Dictionary<string, object>>();
+            string pin = dict?.ContainsKey("roomId") == true ? dict["roomId"]?.ToString() : response.ToString();
+            
+            Debug.Log("[SocketPinClient] PIN extrait: " + pin);
+            
+            if (!string.IsNullOrEmpty(pin))
+            {
+                UpdatePinText("PIN: " + pin);
+                Debug.Log("[SocketPinClient] ✅ PIN mis à jour dans l'UI: " + pin);
+            }
+            else
+            {
+                Debug.LogWarning("[SocketPinClient] ⚠️ PIN vide ou null");
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.LogWarning("[SocketPinClient] ❌ Erreur lors du traitement du PIN: " + ex.Message);
+        }
+    }
+
+    private void HandleRoomPlayers(SocketIOResponse response)
+    {
+        Debug.Log("[SocketPinClient] 👥 Liste des joueurs reçue");
+        try
+        {
+            var playersList = response.GetValue<List<Dictionary<string, object>>>();
+            if (playersList != null)
+            {
+                int playerCount = playersList.Count;
+                UpdatePlayerCount(playerCount);
+                Debug.Log("[SocketPinClient] ✅ Nombre de joueurs mis à jour: " + playerCount);
+            }
+        }
+        catch (Exception ex)
+        {
+            Debug.LogWarning("[SocketPinClient] ❌ Erreur lors du traitement room:players: " + ex.Message);
+        }
+    }
+
+    private void RequestPin()
+    {
+        if (!connected) 
+        {
+            Debug.LogWarning("[SocketPinClient] ⚠️ Impossible de demander un PIN - non connecté");
             return;
         }
 
         try
         {
-             var emitMethod = client.GetType().GetMethod("EmitAsync", new Type[] { typeof(string), typeof(Func<SocketIOResponse, Task>) });
-            if (emitMethod != null)
-            {
-                Func<SocketIOResponse, Task> ack = (SocketIOResponse resp) =>
-                {
-                    try
-                    {
-                        var dict = resp.GetValue<Dictionary<string, object>>();
-                        if (dict != null && dict.ContainsKey("roomId"))
-                        {
-                            HandlePin(dict["roomId"]?.ToString());
-                            return Task.CompletedTask;
-                        }
-
-                        HandlePin(resp.ToString());
-                    }
-                    catch (Exception ex)
-                    {
-                        Debug.LogWarning("[SocketPinClient] ack handler error: " + ex.Message);
-                    }
-                    return Task.CompletedTask;
-                };
-
-                emitMethod.Invoke(client, new object[] { "room:create", ack });
-                Debug.Log("[SocketPinClient] Emitted 'room:create' via EmitAsync with ack (reflection).");
-                return;
-            }
+            Debug.Log("[SocketPinClient] 📤 Envoi de la demande de PIN (room:create)");
+            client.EmitAsync("room:create");
+            Debug.Log("[SocketPinClient] ✅ Demande de PIN envoyée");
         }
         catch (Exception ex)
         {
-            Debug.LogWarning("[SocketPinClient] EmitAsync with callback not available or failed: " + ex.Message);
+            Debug.LogWarning("[SocketPinClient] ❌ Erreur lors de la demande de PIN: " + ex.Message);
         }
+    }
 
-        try
+    private void UpdatePinText(string text)
+    {
+        if (pinText != null)
         {
-            var emitNoAck = client.GetType().GetMethod("EmitAsync", new Type[] { typeof(string), typeof(object[]) })
-                            ?? client.GetType().GetMethod("EmitAsync", new Type[] { typeof(string), typeof(object) });
-
-            if (emitNoAck != null)
-            {
-                try
-                {
-                    emitNoAck.Invoke(client, new object[] { "room:create", Array.Empty<object>() });
-                }
-                catch
-                {
-                    try { emitNoAck.Invoke(client, new object[] { "room:create", null }); } catch { }
-                }
-
-                Debug.Log("[SocketPinClient] Emitted 'room:create' without ack — waiting for server 'room:created' event.");
-                return;
-            }
+            pinText.text = text;
+            Debug.Log("[SocketPinClient] 🎨 UI mise à jour: " + text);
         }
-        catch (Exception ex)
+        else
         {
-            Debug.LogWarning("[SocketPinClient] EmitAsync without ack failed: " + ex.Message);
+            Debug.LogWarning("[SocketPinClient] ⚠️ pinText non assigné - impossible de mettre à jour l'UI");
         }
-
-        Debug.LogWarning("[SocketPinClient] Impossible d'appeler EmitAsync automatiquement — vérifie la version de SocketIOClient. " +
-            "Si nécessaire, écoute un événement serveur (room:created) côté serveur ou adapte le client à ton package.");
     }
 
-    private void HandlePin(string pin)
+    private void UpdatePlayerCount(int count)
     {
-        if (string.IsNullOrEmpty(pin)) return;
-        currentPin = pin;
-        if (logPin) Debug.Log("[SocketPinClient] PIN reçu : " + currentPin);
-        try { OnPinReceived?.Invoke(currentPin); } catch { }
+        if (playerCountText != null)
+        {
+            playerCountText.text = count + " Connectes";
+            Debug.Log("[SocketPinClient] 👥 Nombre de joueurs mis à jour: " + count);
+        }
+        else
+        {
+            Debug.LogWarning("[SocketPinClient] ⚠️ playerCountText non assigné - impossible de mettre à jour le compteur");
+        }
     }
 
-    public void RegeneratePin()
+    async void OnDestroy()
     {
-        RequestPinFromServer();
-    }
-
-    private async void OnApplicationQuit()
-    {
+        Debug.Log("[SocketPinClient] 🗑️ Destruction du client Socket.IO");
         if (client != null)
         {
             try
             {
-                var disconnectMethod = client.GetType().GetMethod("DisconnectAsync", Type.EmptyTypes);
-                if (disconnectMethod != null)
-                {
-                    var taskObj = disconnectMethod.Invoke(client, null) as Task;
-                    if (taskObj != null) await taskObj;
-                }
+                Debug.Log("[SocketPinClient] 📤 Déconnexion en cours...");
+                await client.DisconnectAsync();
                 client.Dispose();
-                client = null;
-                Debug.Log("[SocketPinClient] Déconnecté proprement.");
+                Debug.Log("[SocketPinClient] ✅ Déconnexion terminée");
             }
             catch (Exception ex)
             {
-                Debug.LogWarning("[SocketPinClient] Erreur lors de la déconnexion: " + ex.Message);
+                Debug.LogWarning("[SocketPinClient] ❌ Erreur lors de la déconnexion: " + ex.Message);
             }
         }
     }
-
-    public string GetCurrentPin() => currentPin;
 }
