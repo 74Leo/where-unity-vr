@@ -764,7 +764,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -0.4227, y: -0.000061035}
+  m_AnchoredPosition: {x: 0.000029504, y: 1.5643e-10}
   m_SizeDelta: {x: 2005.1433, y: 1080}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &634814815
@@ -1124,7 +1124,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   serverUrl: http://localhost:3001
   pinText: {fileID: 2054857513}
-  playerCountText: {fileID: 934013668}
+  playersCountText: {fileID: 934013668}
 --- !u!4 &909011966
 Transform:
   m_ObjectHideFlags: 0
@@ -1174,7 +1174,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 288.00003, y: -52}
+  m_AnchoredPosition: {x: 355, y: -54}
   m_SizeDelta: {x: 307.2323, y: 50.045}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &934013668
@@ -1262,7 +1262,7 @@ MonoBehaviour:
   m_VertexBufferAutoSizeReduction: 0
   m_useMaxVisibleDescender: 1
   m_pageToDisplay: 1
-  m_margin: {x: -1.6808472, y: 0, z: 2.0622559, w: 1.5092468}
+  m_margin: {x: -62.16333, y: 0, z: 0.47021484, w: 1.5092468}
   m_isUsingLegacyAnimationComponent: 0
   m_isVolumetricText: 0
   m_hasFontAssetChanged: 0
@@ -1922,8 +1922,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: 288, y: 2}
-  m_SizeDelta: {x: 400, y: 100}
+  m_AnchoredPosition: {x: 300, y: 2}
+  m_SizeDelta: {x: 500, y: 100}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!1 &2107296738
 GameObject:
@@ -2023,8 +2023,8 @@ RectTransform:
   - {fileID: 634814814}
   - {fileID: 1226917300}
   - {fileID: 1058072233}
-  - {fileID: 1758529182}
   - {fileID: 1318950621}
+  - {fileID: 1758529182}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}

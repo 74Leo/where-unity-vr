@@ -1,5 +1,7 @@
 using System;
 using System.Collections.Generic;
+using System.Threading;
+using System.Threading.Tasks;
 using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
@@ -9,18 +11,24 @@ public class SocketPinClient : MonoBehaviour
 {
     [Header("Socket.IO")]
     public string serverUrl = "http://localhost:3001";
-    
+
     [Header("UI")]
     public Text pinText;
-    public TextMeshProUGUI playerCountText;
+    public TextMeshProUGUI playersCountText;
 
     private SocketIOClient.SocketIO client;
     private bool connected = false;
+    private SynchronizationContext unitySyncContext;
 
-    async void Start()
+    void Start()
     {
-        Debug.Log("[SocketPinClient] Initialisation du client Socket.IO vers: " + serverUrl);
+        unitySyncContext = SynchronizationContext.Current;
+
+        LogMain("[SocketPinClient] Initialisation du client Socket.IO vers: " + serverUrl);
         
+        PostToMain(() => UpdatePinText("PIN: ----"));
+        PostToMain(() => UpdatePlayersCountText("-- Connectes"));
+
         client = new SocketIOClient.SocketIO(serverUrl, new SocketIOClient.SocketIOOptions
         {
             Transport = SocketIOClient.Transport.TransportProtocol.WebSocket
@@ -28,105 +36,210 @@ public class SocketPinClient : MonoBehaviour
 
         client.OnConnected += (s, e) =>
         {
-            Debug.Log("[SocketPinClient] ✅ Connecté au serveur");
+            LogMain("[SocketPinClient] ✅ Connecté au serveur");
             connected = true;
-            RequestPin();
+            _ = SendCreateRoomEventAsync();
         };
+
+        client.On("room:players", (response) =>
+        {
+            try
+            {
+                var players = response.GetValue<List<object>>();
+                if (players != null)
+                {
+                    int playerCount = players.Count;
+                    PostToMain(() => UpdatePlayersCountText(playerCount + " Connectes"));
+                    PostToMain(() => Debug.Log("[SocketPinClient] 👥 Nombre de joueurs mis à jour: " + playerCount));
+                }
+            }
+            catch (Exception ex)
+            {
+                PostToMain(() => Debug.LogWarning("[SocketPinClient] ❌ Erreur parsing room:players: " + ex.Message));
+            }
+        });
 
         client.OnDisconnected += (s, e) =>
         {
-            Debug.LogWarning("[SocketPinClient] ❌ Déconnecté du serveur");
+            LogMainWarning("[SocketPinClient] ❌ Déconnecté du (serveur");
             connected = false;
-            UpdatePinText("PIN: ----");
+            PostToMain(() => UpdatePinText("PIN: ----"));
+            PostToMain(() => UpdatePlayersCountText("-- Connectes"));
         };
 
-        client.On("room:players", HandleRoomPlayers);
-        client.On("room:created", HandleRoomCreated);
-        Debug.Log("[SocketPinClient] Écouteurs d'événements configurés");
+        _ = ConnectAsync();
+    }
 
+    private async Task ConnectAsync()
+    {
         try
         {
-            Debug.Log("[SocketPinClient] Tentative de connexion...");
+            LogMain("[SocketPinClient] Tentative de connexion...");
             await client.ConnectAsync();
         }
         catch (Exception ex)
         {
-            Debug.LogError("[SocketPinClient] ❌ Erreur de connexion: " + ex.Message);
-            UpdatePinText("PIN: ERREUR");
+            LogMainError("[SocketPinClient] ❌ Erreur de connexion: " + ex.Message);
+            PostToMain(() => UpdatePinText("PIN: ERREUR"));
+            PostToMain(() => UpdatePlayersCountText("** Connectes"));
         }
     }
 
-    private void HandleRoomCreated(SocketIOResponse response)
+    private async Task SendCreateRoomEventAsync()
     {
-        Debug.Log("[SocketPinClient] 📨 Événement room créé reçu");
-        try
+        if (!connected)
         {
-            var dict = response.GetValue<Dictionary<string, object>>();
-            string pin = dict?.ContainsKey("roomId") == true ? dict["roomId"]?.ToString() : response.ToString();
-            
-            Debug.Log("[SocketPinClient] PIN extrait: " + pin);
-            
-            if (!string.IsNullOrEmpty(pin))
-            {
-                UpdatePinText("PIN: " + pin);
-                Debug.Log("[SocketPinClient] ✅ PIN mis à jour dans l'UI: " + pin);
-            }
-            else
-            {
-                Debug.LogWarning("[SocketPinClient] ⚠️ PIN vide ou null");
-            }
-        }
-        catch (Exception ex)
-        {
-            Debug.LogWarning("[SocketPinClient] ❌ Erreur lors du traitement du PIN: " + ex.Message);
-        }
-    }
-
-    private void HandleRoomPlayers(SocketIOResponse response)
-    {
-        Debug.Log("[SocketPinClient] 👥 Liste des joueurs reçue");
-        try
-        {
-            var playersList = response.GetValue<List<Dictionary<string, object>>>();
-            if (playersList != null)
-            {
-                int playerCount = playersList.Count;
-                UpdatePlayerCount(playerCount);
-                Debug.Log("[SocketPinClient] ✅ Nombre de joueurs mis à jour: " + playerCount);
-            }
-        }
-        catch (Exception ex)
-        {
-            Debug.LogWarning("[SocketPinClient] ❌ Erreur lors du traitement room:players: " + ex.Message);
-        }
-    }
-
-    private void RequestPin()
-    {
-        if (!connected) 
-        {
-            Debug.LogWarning("[SocketPinClient] ⚠️ Impossible de demander un PIN - non connecté");
+            LogMainWarning("[SocketPinClient] ⚠️ Impossible d'envoyer room:create — non connecté");
             return;
         }
 
+        var tcs = new TaskCompletionSource<string>();
+        Action<SocketIOResponse> handler = null;
+
+        handler = (response) =>
+        {
+            try
+            {
+                string roomId = null;
+                
+                try
+                {
+                    var rawResponse = response.ToString();
+                    PostToMain(() => Debug.Log("[SocketPinClient] 📥 Réponse brute: " + rawResponse));
+                    
+                    if (rawResponse.Contains("roomId"))
+                    {
+                        var startIndex = rawResponse.IndexOf("\"roomId\":\"") + 10;
+                        var endIndex = rawResponse.IndexOf("\"", startIndex);
+                        if (startIndex > 9 && endIndex > startIndex)
+                        {
+                            roomId = rawResponse.Substring(startIndex, endIndex - startIndex);
+                        }
+                    }
+                }
+                catch (Exception ex1)
+                {
+                    PostToMain(() => Debug.LogWarning("[SocketPinClient] ⚠️ Méthode 1 échouée: " + ex1.Message));
+                }
+                
+                if (string.IsNullOrEmpty(roomId))
+                {
+                    try
+                    {
+                        var dict = response.GetValue<Dictionary<string, object>>();
+                        if (dict != null && dict.ContainsKey("roomId"))
+                        {
+                            roomId = dict["roomId"]?.ToString();
+                        }
+                    }
+                    catch (Exception ex2)
+                    {
+                        PostToMain(() => Debug.LogWarning("[SocketPinClient] ⚠️ Méthode 2 échouée: " + ex2.Message));
+                    }
+                }
+                
+                if (string.IsNullOrEmpty(roomId))
+                {
+                    try
+                    {
+                        var obj = response.GetValue<object>();
+                        if (obj != null)
+                        {
+                            var objStr = obj.ToString();
+                            PostToMain(() => Debug.Log("[SocketPinClient] 📥 Objet reçu: " + objStr));
+                            
+                            // Extraction simple
+                            var startIndex = objStr.IndexOf("\"roomId\":\"") + 10;
+                            var endIndex = objStr.IndexOf("\"", startIndex);
+                            if (startIndex > 9 && endIndex > startIndex)
+                            {
+                                roomId = objStr.Substring(startIndex, endIndex - startIndex);
+                            }
+                        }
+                    }
+                    catch (Exception ex3)
+                    {
+                        PostToMain(() => Debug.LogWarning("[SocketPinClient] ⚠️ Méthode 3 échouée: " + ex3.Message));
+                    }
+                }
+                
+                if (!string.IsNullOrEmpty(roomId))
+                {
+                    tcs.TrySetResult(roomId);
+                    return;
+                }
+                
+                PostToMain(() => Debug.LogWarning("[SocketPinClient] ❌ Impossible d'extraire le roomId"));
+            }
+            catch (Exception ex)
+            {
+                PostToMain(() => Debug.LogWarning("[SocketPinClient] ❌ Erreur parsing réponse: " + ex.Message));
+            }
+            
+            tcs.TrySetResult("ERREUR");
+        };
+
         try
         {
-            Debug.Log("[SocketPinClient] 📤 Envoi de la demande de PIN (room:create)");
-            client.EmitAsync("room:create");
-            Debug.Log("[SocketPinClient] ✅ Demande de PIN envoyée");
+            PostToMain(() => Debug.Log("[SocketPinClient] 📤 Emission de 'room:create' et attente de réponse..."));
+
+            client.On("room:create:response", handler);
+
+            await client.EmitAsync("room:create");
+
+            var timeoutMs = 5000;
+            var completed = await Task.WhenAny(tcs.Task, Task.Delay(timeoutMs));
+
+            try
+            {
+                client.Off("room:create:response");
+            }
+            catch (Exception)
+            {
+            }
+
+            if (completed == tcs.Task)
+            {
+                var pin = tcs.Task.Result;
+                PostToMain(() => UpdatePinText("PIN: " + pin));
+                PostToMain(() => Debug.Log("[SocketPinClient] ✅ PIN reçu: " + pin));
+            }
+            else
+            {
+                PostToMain(() => Debug.LogWarning("[SocketPinClient] ⚠️ Timeout en attente de réponse"));
+                PostToMain(() => UpdatePinText("PIN: TIMEOUT"));
+            }
         }
         catch (Exception ex)
         {
-            Debug.LogWarning("[SocketPinClient] ❌ Erreur lors de la demande de PIN: " + ex.Message);
+            PostToMain(() => Debug.LogWarning("[SocketPinClient] ❌ Erreur lors de l'émission: " + ex.Message));
+            try { client.Off("room:create:response"); } catch { }
+            PostToMain(() => UpdatePinText("PIN: ***"));
         }
     }
+
+    private void PostToMain(Action action)
+    {
+        if (unitySyncContext != null)
+        {
+            unitySyncContext.Post(_ => action(), null);
+        }
+        else
+        {
+            try { action(); } catch { }
+        }
+    }
+    
+    private void LogMain(string msg) => PostToMain(() => Debug.Log(msg));
+    private void LogMainWarning(string msg) => PostToMain(() => Debug.LogWarning(msg));
+    private void LogMainError(string msg) => PostToMain(() => Debug.LogError(msg));
 
     private void UpdatePinText(string text)
     {
         if (pinText != null)
         {
             pinText.text = text;
-            Debug.Log("[SocketPinClient] 🎨 UI mise à jour: " + text);
+            Debug.Log("[SocketPinClient] 🎨 UI PIN mise à jour: " + text);
         }
         else
         {
@@ -134,34 +247,34 @@ public class SocketPinClient : MonoBehaviour
         }
     }
 
-    private void UpdatePlayerCount(int count)
+    private void UpdatePlayersCountText(string text)
     {
-        if (playerCountText != null)
+        if (playersCountText != null)
         {
-            playerCountText.text = count + " Connectes";
-            Debug.Log("[SocketPinClient] 👥 Nombre de joueurs mis à jour: " + count);
+            playersCountText.text = text;
+            Debug.Log("[SocketPinClient] 🎨 UI Joueurs mise à jour: " + text);
         }
         else
         {
-            Debug.LogWarning("[SocketPinClient] ⚠️ playerCountText non assigné - impossible de mettre à jour le compteur");
+            Debug.LogWarning("[SocketPinClient] ⚠️ playersCountText non assigné - impossible de mettre à jour l'UI");
         }
     }
 
     async void OnDestroy()
     {
-        Debug.Log("[SocketPinClient] 🗑️ Destruction du client Socket.IO");
+        LogMain("[SocketPinClient] 🗑️ Destruction du client Socket.IO");
         if (client != null)
         {
             try
             {
-                Debug.Log("[SocketPinClient] 📤 Déconnexion en cours...");
+                LogMain("[SocketPinClient] 📤 Déconnexion en cours...");
                 await client.DisconnectAsync();
                 client.Dispose();
-                Debug.Log("[SocketPinClient] ✅ Déconnexion terminée");
+                LogMain("[SocketPinClient] ✅ Déconnexion terminée");
             }
             catch (Exception ex)
             {
-                Debug.LogWarning("[SocketPinClient] ❌ Erreur lors de la déconnexion: " + ex.Message);
+                LogMainWarning("[SocketPinClient] ❌ Erreur lors de la déconnexion: " + ex.Message);
             }
         }
     }
