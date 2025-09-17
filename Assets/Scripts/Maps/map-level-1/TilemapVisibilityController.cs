@@ -1,5 +1,7 @@
 using UnityEngine;
 using UnityEngine.Tilemaps;
+using SocketIOClient;
+using System.Collections.Generic;
 
 public class TilemapVisibilityController : MonoBehaviour
 {
@@ -16,12 +18,38 @@ public class TilemapVisibilityController : MonoBehaviour
     public float updateInterval = 1f;
     public bool hideAllByDefault = true;
     
-    private int currentPlayerCount = 0;
+    private int serverPlayerCount = 0;
 
     void Start()
     {
         SetAllObstaclesInvisible();
-        InvokeRepeating(nameof(UpdatePlayerCount), 1f, updateInterval);
+        SubscribeToSocketEvents();
+    }
+
+    void SubscribeToSocketEvents()
+    {
+        if (SocketPinClient.Instance != null)
+        {
+            SocketPinClient.Instance.SubscribeToRoomPlayers(OnRoomPlayersUpdate);
+        }
+    }
+
+    void OnRoomPlayersUpdate(SocketIOResponse response)
+    {
+        try
+        {
+            var players = response.GetValue<List<object>>();
+            if (players != null)
+            {
+                serverPlayerCount = players.Count;
+                UpdateObstacleVisibility();
+                Debug.Log($"[TilemapVisibilityController] Serveur: {serverPlayerCount} joueurs");
+            }
+        }
+        catch (System.Exception ex)
+        {
+            Debug.LogWarning($"[TilemapVisibilityController] Erreur parsing room:players: {ex.Message}");
+        }
     }
 
     void SetAllObstaclesInvisible()
@@ -35,56 +63,16 @@ public class TilemapVisibilityController : MonoBehaviour
         SetTilemapsVisibility(chestMaps, false);
     }
 
-    void UpdatePlayerCount()
-    {
-        if (SocketPinClient.Instance != null && SocketPinClient.Instance.IsConnected())
-        {
-            int newCount = GetPlayerCountFromSocket();
-            if (newCount != currentPlayerCount)
-            {
-                currentPlayerCount = newCount;
-                UpdateObstacleVisibility();
-                Debug.Log($"[TilemapVisibilityController] Joueurs: {currentPlayerCount}");
-            }
-        }
-    }
-
-    int GetPlayerCountFromSocket()
-    {
-        try
-        {
-            var socketClient = SocketPinClient.Instance;
-            if (socketClient != null && socketClient.IsConnected())
-            {
-                string roomId = socketClient.GetCurrentRoomId();
-                if (!string.IsNullOrEmpty(roomId))
-                {
-                    return CountPlayersInRoom(roomId);
-                }
-            }
-        }
-        catch (System.Exception ex)
-        {
-            Debug.LogWarning($"[TilemapVisibilityController] Erreur: {ex.Message}");
-        }
-        return 0;
-    }
-
-    int CountPlayersInRoom(string roomId)
-    {
-        GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
-        return players.Length;
-    }
 
     void UpdateObstacleVisibility()
     {
-        SetTilemapsVisibility(wallsMaps, currentPlayerCount >= 1);
-        SetTilemapsVisibility(boxMaps, currentPlayerCount >= 2);
-        SetTilemapsVisibility(box2Maps, currentPlayerCount >= 3);
-        SetTilemapsVisibility(ladderMaps, currentPlayerCount >= 4);
-        SetTilemapsVisibility(vaseMaps, currentPlayerCount >= 5);
-        SetTilemapsVisibility(box3Maps, currentPlayerCount >= 6);
-        SetTilemapsVisibility(chestMaps, currentPlayerCount >= 7);
+        SetTilemapsVisibility(wallsMaps, serverPlayerCount >= 1);
+        SetTilemapsVisibility(boxMaps, serverPlayerCount >= 2);
+        SetTilemapsVisibility(box2Maps, serverPlayerCount >= 3);
+        SetTilemapsVisibility(ladderMaps, serverPlayerCount >= 4);
+        SetTilemapsVisibility(vaseMaps, serverPlayerCount >= 5);
+        SetTilemapsVisibility(box3Maps, serverPlayerCount >= 6);
+        SetTilemapsVisibility(chestMaps, serverPlayerCount >= 7);
     }
 
     void SetTilemapsVisibility(Tilemap[] tilemaps, bool visible)
@@ -105,17 +93,17 @@ public class TilemapVisibilityController : MonoBehaviour
         {
             if (hideAllByDefault)
             {
-                tilemap.color = new Color(255f, 255f, 255f, 0f);
+                tilemap.color = new Color(1f, 1f, 1f, 0f);
             }
             else
             {
-                tilemap.color = new Color(255f, 255f, 255f, 1f);
+                tilemap.color = new Color(1f, 1f, 1f, 1f);
             }
             EnableTilemapCollisions(tilemap);
         }
         else
         {
-            tilemap.color = new Color(255f, 255f, 255f, 0f);
+            tilemap.color = new Color(1f, 1f, 1f, 0f);
             DisableTilemapCollisions(tilemap);
         }
     }
@@ -140,6 +128,5 @@ public class TilemapVisibilityController : MonoBehaviour
 
     void OnDestroy()
     {
-        CancelInvoke(nameof(UpdatePlayerCount));
     }
 }

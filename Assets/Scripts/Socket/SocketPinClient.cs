@@ -403,6 +403,14 @@ public class SocketPinClient : MonoBehaviour
         UpdateUIWithCurrentData();
     }
 
+    public void SubscribeToRoomPlayers(System.Action<SocketIOResponse> callback)
+    {
+        if (client != null)
+        {
+            client.On("room:players", callback);
+        }
+    }
+
     public async Task DisconnectAsync()
     {
         LogMain("[SocketPinClient] 📤 Déconnexion forcée...");
