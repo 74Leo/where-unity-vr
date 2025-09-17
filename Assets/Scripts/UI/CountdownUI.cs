@@ -2,6 +2,56 @@ using UnityEngine;
 using UnityEngine.UI;
 using TMPro;
 
+using UnityEngine;
+
+public class CountdownUI : MonoBehaviour
+{
+    [Header("Référence du joueur")]
+    public Transform player;
+
+    [Header("Position de respawn")]
+    [Tooltip("Position où le joueur sera placé quand le chrono arrive à 0")]
+    public Vector3 respawnPosition = new Vector3(5f, 3f, 6f);
+
+    [Header("Durée du chrono (en secondes)")]
+    public float duration = 120f;
+
+    private float timeLeft;
+    private bool isRunning = false;
+    
+    void Start()
+    {
+        StartCountdown();
+    }
+
+    void Update()
+    {
+        if (!isRunning) return;
+
+        timeLeft -= Time.deltaTime;
+
+        if (timeLeft <= 0f)
+        {
+            timeLeft = 0f;
+            isRunning = false;
+
+            if (player != null)
+            {
+                player.position = respawnPosition;
+            }
+
+            StartCountdown();
+        }
+    }
+
+    public void StartCountdown()
+    {
+        timeLeft = duration;
+        isRunning = true;
+    }
+}
+
+/*
 public class CountdownUI : MonoBehaviour
 {
     [Header("Durée du chrono (en secondes)")]
@@ -17,7 +67,7 @@ public class CountdownUI : MonoBehaviour
 
     [Header("Référence du joueur")]
     public Transform player;
-
+    
     [Header("Position de respawn")]
     [Tooltip("Position où le joueur sera placé quand le chrono arrive à 0")]
     public Vector3 respawnPosition = new Vector3(5f, 3f, 6f);
@@ -85,3 +135,4 @@ public class CountdownUI : MonoBehaviour
         UpdateUI();
     }
 }
+*/
