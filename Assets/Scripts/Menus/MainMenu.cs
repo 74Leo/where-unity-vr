@@ -9,11 +9,16 @@ public class MainMenu : MonoBehaviour
 
     [Header("Windows")]
     public GameObject settingsWindow;
+
+    void Start()
+    {
+        SocketPinClient.Instance?.RefreshUI();
+    }
     
     public void StartGame()
     {
         if (!string.IsNullOrEmpty(levelToLoad))
-            SceneManager.LoadScene(levelToLoad);
+            FadeScreen.LoadSceneWithFadeAsync(levelToLoad);
         else
             Debug.LogWarning("[MainMenu] levelToLoad non configuré.");
     }
@@ -32,7 +37,7 @@ public class MainMenu : MonoBehaviour
 
     public void LoadCreditsScene()
     {
-        SceneManager.LoadScene("Credits");
+        FadeScreen.LoadSceneWithFadeAsync("Credits");
     }
 
     public void QuitGame()

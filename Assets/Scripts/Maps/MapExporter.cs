@@ -13,6 +13,9 @@ public class MapExporter : MonoBehaviour
     public int outWidth  = 1920;
     public int outHeight = 1080;
 
+    [Header("Nom de l'image")]
+    public string nameImage = "map_level_one_export";
+
     [ContextMenu("Exporter la carte en PNG")]
     public void Export()
     {
@@ -65,7 +68,7 @@ public class MapExporter : MonoBehaviour
         if (!Directory.Exists(folder))
             Directory.CreateDirectory(folder);
 
-        string path = Path.Combine(folder, "map_level_one_export.png");
+        string path = Path.Combine(folder, nameImage + ".png");
         File.WriteAllBytes(path, tex.EncodeToPNG());
 
         cam.targetTexture = null;

@@ -39,16 +39,19 @@ public class PauseMenu : MonoBehaviour
 
     public void SettingsButton()
     {
-        settingsWindow.SetActive(true);
+        if (settingsWindow != null)
+            settingsWindow.SetActive(true);
     }
 
-    public void CloseSettingsWindow() {
-        settingsWindow.SetActive(false);
+    public void CloseSettingsWindow()
+    {
+        if (settingsWindow != null)
+            settingsWindow.SetActive(false);
     }
 
     public void LoadMainMenu()
     {
         Resume();
-        SceneManager.LoadScene("MainMenu"); 
+        FadeScreen.LoadSceneWithFadeAsync("MainMenu");
     }
 }

@@ -1,7 +1,68 @@
 using UnityEngine;
-using UnityEngine.UI;
-using TMPro;
+//using UnityEngine.UI;
+//using TMPro;
 
+public class CountdownUI : MonoBehaviour
+{
+    [Header("Référence du joueur")]
+    public Transform player;
+
+    [Header("Position de respawn")]
+    [Tooltip("Position où le joueur sera placé quand le chrono arrive à 0")]
+    public Vector3 respawnPosition = new Vector3(5f, 3f, 6f);
+
+    [Header("Référence du Timer")]
+    [Tooltip("GameObject contenant le script Timer")]
+    public Timer timerScript;
+
+    private float timeLeft;
+    private bool isRunning = false;
+    
+    void Start()
+    {
+        StartCountdown();
+    }
+
+    void Update()
+    {
+        if (!isRunning) return;
+
+        timeLeft -= Time.deltaTime;
+
+        if (timeLeft <= 0f)
+        {
+            timeLeft = 0f;
+            isRunning = false;
+
+            if (player != null)
+            {
+                player.position = respawnPosition;
+            }
+
+            if (timerScript != null)
+            {
+                timerScript.StartTimer();
+            }
+
+            StartCountdown();
+        }
+    }
+
+    public void StartCountdown()
+    {
+        if (timerScript != null)
+        {
+            timeLeft = timerScript.ReturnTotalSeconds();
+        }
+        else
+        {
+            timeLeft = 60f;
+        }
+        isRunning = true;
+    }
+}
+
+/*
 public class CountdownUI : MonoBehaviour
 {
     [Header("Durée du chrono (en secondes)")]
@@ -17,7 +78,7 @@ public class CountdownUI : MonoBehaviour
 
     [Header("Référence du joueur")]
     public Transform player;
-
+    
     [Header("Position de respawn")]
     [Tooltip("Position où le joueur sera placé quand le chrono arrive à 0")]
     public Vector3 respawnPosition = new Vector3(5f, 3f, 6f);
@@ -85,3 +146,4 @@ public class CountdownUI : MonoBehaviour
         UpdateUI();
     }
 }
+*/
