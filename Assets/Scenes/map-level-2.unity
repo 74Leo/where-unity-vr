@@ -33641,7 +33641,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8450d257031867d4d8b47bbe9b0a2e61, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  targetSceneName: map-level-2
+  targetSceneName: Credits
   oneShot: 1
 --- !u!61 &774243686
 BoxCollider2D:
@@ -35213,7 +35213,6 @@ MonoBehaviour:
     m_Bits: 256
   outWidth: 1920
   outHeight: 1080
-  nameImage: map_level_one_export
 --- !u!4 &1280368645
 Transform:
   m_ObjectHideFlags: 0

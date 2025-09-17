@@ -19,9 +19,34 @@ public class SocketPinClient : MonoBehaviour
     private SocketIOClient.SocketIO client;
     private bool connected = false;
     private SynchronizationContext unitySyncContext;
+    
+    public static SocketPinClient Instance { get; private set; }
+    private string currentRoomId = null;
+
+    void Awake()
+    {
+        if (Instance == null)
+        {
+            Instance = this;
+            DontDestroyOnLoad(gameObject);
+            LogMain("[SocketPinClient] Instance singleton créée et persistante");
+        }
+        else
+        {
+            LogMain("[SocketPinClient] Instance déjà existante, destruction du doublon");
+            Destroy(gameObject);
+            return;
+        }
+    }
 
     void Start()
     {
+        if (connected && client != null)
+        {
+            LogMain("[SocketPinClient] Client déjà connecté, réutilisation de la connexion");
+            return;
+        }
+
         unitySyncContext = SynchronizationContext.Current;
 
         LogMain("[SocketPinClient] Initialisation du client Socket.IO vers: " + serverUrl);
@@ -201,6 +226,7 @@ public class SocketPinClient : MonoBehaviour
             if (completed == tcs.Task)
             {
                 var pin = tcs.Task.Result;
+                currentRoomId = pin;
                 PostToMain(() => UpdatePinText("PIN: " + pin));
                 PostToMain(() => Debug.Log("[SocketPinClient] ✅ PIN reçu: " + pin));
             }
@@ -217,6 +243,7 @@ public class SocketPinClient : MonoBehaviour
             PostToMain(() => UpdatePinText("PIN: ***"));
         }
     }
+
 
     private void PostToMain(Action action)
     {
@@ -260,8 +287,138 @@ public class SocketPinClient : MonoBehaviour
         }
     }
 
+    public void LaunchGame()
+    {
+        if (!connected)
+        {
+            LogMainWarning("[SocketPinClient] ⚠️ Impossible de lancer la partie — non connecté");
+            return;
+        }
+
+        _ = LaunchGameInternalAsync();
+    }
+
+    private async Task LaunchGameInternalAsync()
+    {
+        var tcs = new TaskCompletionSource<bool>();
+        Action<SocketIOResponse> handler = null;
+
+        handler = (response) =>
+        {
+            try
+            {
+                var dict = response.GetValue<Dictionary<string, object>>();
+                if (dict != null && dict.ContainsKey("ok"))
+                {
+                    bool success = Convert.ToBoolean(dict["ok"]);
+                    tcs.TrySetResult(success);
+                    
+                    if (success)
+                    {
+                        PostToMain(() => Debug.Log("[SocketPinClient] ✅ Partie lancée avec succès - obstacles assignés aux guides"));
+                    }
+                    else
+                    {
+                        string error = dict.ContainsKey("error") ? dict["error"].ToString() : "Erreur inconnue";
+                        PostToMain(() => Debug.LogWarning("[SocketPinClient] ❌ Erreur lors du lancement: " + error));
+                    }
+                }
+                else
+                {
+                    PostToMain(() => Debug.LogWarning("[SocketPinClient] ❌ Réponse invalide du serveur"));
+                    tcs.TrySetResult(false);
+                }
+            }
+            catch (Exception ex)
+            {
+                PostToMain(() => Debug.LogWarning("[SocketPinClient] ❌ Erreur parsing réponse game:launch: " + ex.Message));
+                tcs.TrySetResult(false);
+            }
+        };
+
+        try
+        {
+            PostToMain(() => Debug.Log("[SocketPinClient] 📤 Lancement de la partie (Unity)..."));
+
+            await client.EmitAsync("game:launch", (response) =>
+            {
+                try
+                {
+                    var dict = response.GetValue<Dictionary<string, object>>();
+                    if (dict != null && dict.ContainsKey("ok"))
+                    {
+                        bool success = Convert.ToBoolean(dict["ok"]);
+                        
+                        if (success)
+                        {
+                            PostToMain(() => Debug.Log("[SocketPinClient] ✅ Partie lancée avec succès - obstacles assignés aux guides"));
+                        }
+                        else
+                        {
+                            string error = dict.ContainsKey("error") ? dict["error"].ToString() : "Erreur inconnue";
+                            PostToMain(() => Debug.LogWarning("[SocketPinClient] ❌ Erreur lors du lancement: " + error));
+                        }
+                    }
+                    else
+                    {
+                        PostToMain(() => Debug.LogWarning("[SocketPinClient] ❌ Réponse invalide du serveur"));
+                    }
+                }
+                catch (Exception ex)
+                {
+                    PostToMain(() => Debug.LogWarning("[SocketPinClient] ❌ Erreur parsing réponse game:launch: " + ex.Message));
+                }
+            });
+        }
+        catch (Exception ex)
+        {
+            PostToMain(() => Debug.LogWarning("[SocketPinClient] ❌ Erreur lors de l'émission game:launch: " + ex.Message));
+        }
+    }
+
+    public void OnSceneChanged()
+    {
+        LogMain("[SocketPinClient] 🔄 Changement de scène détecté - connexion maintenue");
+    }
+
+    public string GetCurrentRoomId()
+    {
+        return currentRoomId;
+    }
+
+    public bool IsConnected()
+    {
+        return connected;
+    }
+
+    public async Task DisconnectAsync()
+    {
+        LogMain("[SocketPinClient] 📤 Déconnexion forcée...");
+        if (client != null)
+        {
+            try
+            {
+                await client.DisconnectAsync();
+                client.Dispose();
+                connected = false;
+                currentRoomId = null;
+                LogMain("[SocketPinClient] ✅ Déconnexion terminée");
+            }
+            catch (Exception ex)
+            {
+                LogMainWarning("[SocketPinClient] ❌ Erreur lors de la déconnexion: " + ex.Message);
+            }
+        }
+    }
+
     async void OnDestroy()
     {
+        if (Instance == this)
+        {
+            LogMain("[SocketPinClient] 🗑️ Destruction du singleton - connexion maintenue");
+            return;
+        }
+
         LogMain("[SocketPinClient] 🗑️ Destruction du client Socket.IO");
         if (client != null)
         {
