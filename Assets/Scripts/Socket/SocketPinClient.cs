@@ -44,6 +44,7 @@ public class SocketPinClient : MonoBehaviour
         if (connected && client != null)
         {
             LogMain("[SocketPinClient] Client déjà connecté, réutilisation de la connexion");
+            UpdateUIWithCurrentData();
             return;
         }
 
@@ -104,7 +105,7 @@ public class SocketPinClient : MonoBehaviour
         }
         catch (Exception ex)
         {
-            LogMainError("[SocketPinClient] ❌ Erreur de connexion: " + ex.Message);
+            LogMainWarning("[SocketPinClient] ❌ Erreur de connexion: " + ex.Message);
             PostToMain(() => UpdatePinText("PIN: ERREUR"));
             PostToMain(() => UpdatePlayersCountText("** Connectes"));
         }
@@ -259,18 +260,12 @@ public class SocketPinClient : MonoBehaviour
     
     private void LogMain(string msg) => PostToMain(() => Debug.Log(msg));
     private void LogMainWarning(string msg) => PostToMain(() => Debug.LogWarning(msg));
-    private void LogMainError(string msg) => PostToMain(() => Debug.LogError(msg));
 
     private void UpdatePinText(string text)
     {
         if (pinText != null)
         {
             pinText.text = text;
-            Debug.Log("[SocketPinClient] 🎨 UI PIN mise à jour: " + text);
-        }
-        else
-        {
-            Debug.LogWarning("[SocketPinClient] ⚠️ pinText non assigné - impossible de mettre à jour l'UI");
         }
     }
 
@@ -279,11 +274,6 @@ public class SocketPinClient : MonoBehaviour
         if (playersCountText != null)
         {
             playersCountText.text = text;
-            Debug.Log("[SocketPinClient] 🎨 UI Joueurs mise à jour: " + text);
-        }
-        else
-        {
-            Debug.LogWarning("[SocketPinClient] ⚠️ playersCountText non assigné - impossible de mettre à jour l'UI");
         }
     }
 
@@ -300,42 +290,6 @@ public class SocketPinClient : MonoBehaviour
 
     private async Task LaunchGameInternalAsync()
     {
-        var tcs = new TaskCompletionSource<bool>();
-        Action<SocketIOResponse> handler = null;
-
-        handler = (response) =>
-        {
-            try
-            {
-                var dict = response.GetValue<Dictionary<string, object>>();
-                if (dict != null && dict.ContainsKey("ok"))
-                {
-                    bool success = Convert.ToBoolean(dict["ok"]);
-                    tcs.TrySetResult(success);
-                    
-                    if (success)
-                    {
-                        PostToMain(() => Debug.Log("[SocketPinClient] ✅ Partie lancée avec succès - obstacles assignés aux guides"));
-                    }
-                    else
-                    {
-                        string error = dict.ContainsKey("error") ? dict["error"].ToString() : "Erreur inconnue";
-                        PostToMain(() => Debug.LogWarning("[SocketPinClient] ❌ Erreur lors du lancement: " + error));
-                    }
-                }
-                else
-                {
-                    PostToMain(() => Debug.LogWarning("[SocketPinClient] ❌ Réponse invalide du serveur"));
-                    tcs.TrySetResult(false);
-                }
-            }
-            catch (Exception ex)
-            {
-                PostToMain(() => Debug.LogWarning("[SocketPinClient] ❌ Erreur parsing réponse game:launch: " + ex.Message));
-                tcs.TrySetResult(false);
-            }
-        };
-
         try
         {
             PostToMain(() => Debug.Log("[SocketPinClient] 📤 Lancement de la partie (Unity)..."));
@@ -351,34 +305,87 @@ public class SocketPinClient : MonoBehaviour
                         
                         if (success)
                         {
-                            PostToMain(() => Debug.Log("[SocketPinClient] ✅ Partie lancée avec succès - obstacles assignés aux guides"));
+                            PostToMain(() => Debug.Log("[SocketPinClient] ✅ Partie lancée avec succès"));
                         }
                         else
                         {
                             string error = dict.ContainsKey("error") ? dict["error"].ToString() : "Erreur inconnue";
-                            PostToMain(() => Debug.LogWarning("[SocketPinClient] ❌ Erreur lors du lancement: " + error));
+                            PostToMain(() => Debug.LogWarning("[SocketPinClient] ❌ Erreur: " + error));
                         }
                     }
                     else
                     {
-                        PostToMain(() => Debug.LogWarning("[SocketPinClient] ❌ Réponse invalide du serveur"));
+                        PostToMain(() => Debug.LogWarning("[SocketPinClient] ❌ Réponse invalide"));
                     }
                 }
                 catch (Exception ex)
                 {
-                    PostToMain(() => Debug.LogWarning("[SocketPinClient] ❌ Erreur parsing réponse game:launch: " + ex.Message));
+                    PostToMain(() => Debug.LogWarning("[SocketPinClient] ❌ Erreur parsing: " + ex.Message));
                 }
             });
         }
         catch (Exception ex)
         {
-            PostToMain(() => Debug.LogWarning("[SocketPinClient] ❌ Erreur lors de l'émission game:launch: " + ex.Message));
+            PostToMain(() => Debug.LogWarning("[SocketPinClient] ❌ Erreur émission: " + ex.Message));
         }
     }
 
     public void OnSceneChanged()
     {
         LogMain("[SocketPinClient] 🔄 Changement de scène détecté - connexion maintenue");
+        UpdateUIWithCurrentData();
+    }
+
+    private void UpdateUIWithCurrentData()
+    {
+        FindUIReferences();
+        
+        if (connected && !string.IsNullOrEmpty(currentRoomId))
+        {
+            PostToMain(() => UpdatePinText("PIN: " + currentRoomId));
+            PostToMain(() => Debug.Log("[SocketPinClient] 🔄 UI mise à jour avec les données actuelles"));
+        }
+        else if (connected)
+        {
+            PostToMain(() => UpdatePinText("PIN: ----"));
+            PostToMain(() => UpdatePlayersCountText("-- Connectes"));
+        }
+        else
+        {
+            PostToMain(() => UpdatePinText("PIN: ----"));
+            PostToMain(() => UpdatePlayersCountText("-- Connectes"));
+        }
+    }
+
+    private void FindUIReferences()
+    {
+        if (pinText == null)
+        {
+            Text[] texts = FindObjectsOfType<Text>();
+            foreach (Text text in texts)
+            {
+                if (text.name.ToLower().Contains("pin"))
+                {
+                    pinText = text;
+                    Debug.Log("[SocketPinClient] ✅ pinText trouvé: " + text.name);
+                    break;
+                }
+            }
+        }
+
+        if (playersCountText == null)
+        {
+            TextMeshProUGUI[] tmpTexts = FindObjectsOfType<TextMeshProUGUI>();
+            foreach (TextMeshProUGUI tmpText in tmpTexts)
+            {
+                if (tmpText.name.ToLower().Contains("player") || tmpText.name.ToLower().Contains("joueur"))
+                {
+                    playersCountText = tmpText;
+                    Debug.Log("[SocketPinClient] ✅ playersCountText trouvé: " + tmpText.name);
+                    break;
+                }
+            }
+        }
     }
 
     public string GetCurrentRoomId()
@@ -389,6 +396,11 @@ public class SocketPinClient : MonoBehaviour
     public bool IsConnected()
     {
         return connected;
+    }
+
+    public void RefreshUI()
+    {
+        UpdateUIWithCurrentData();
     }
 
     public async Task DisconnectAsync()

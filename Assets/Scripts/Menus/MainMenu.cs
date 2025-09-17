@@ -9,6 +9,11 @@ public class MainMenu : MonoBehaviour
 
     [Header("Windows")]
     public GameObject settingsWindow;
+
+    void Start()
+    {
+        SocketPinClient.Instance?.RefreshUI();
+    }
     
     public void StartGame()
     {
