@@ -361,7 +361,7 @@ public class SocketPinClient : MonoBehaviour
     {
         if (pinText == null)
         {
-            Text[] texts = FindObjectsOfType<Text>();
+            Text[] texts = FindObjectsByType<Text>(FindObjectsSortMode.None);
             foreach (Text text in texts)
             {
                 if (text.name.ToLower().Contains("pin"))
@@ -375,7 +375,7 @@ public class SocketPinClient : MonoBehaviour
 
         if (playersCountText == null)
         {
-            TextMeshProUGUI[] tmpTexts = FindObjectsOfType<TextMeshProUGUI>();
+            TextMeshProUGUI[] tmpTexts = FindObjectsByType<TextMeshProUGUI>(FindObjectsSortMode.None);
             foreach (TextMeshProUGUI tmpText in tmpTexts)
             {
                 if (tmpText.name.ToLower().Contains("player") || tmpText.name.ToLower().Contains("joueur"))
