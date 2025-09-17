@@ -1,8 +1,6 @@
 using UnityEngine;
-using UnityEngine.UI;
-using TMPro;
-
-using UnityEngine;
+//using UnityEngine.UI;
+//using TMPro;
 
 public class CountdownUI : MonoBehaviour
 {
@@ -13,8 +11,9 @@ public class CountdownUI : MonoBehaviour
     [Tooltip("Position où le joueur sera placé quand le chrono arrive à 0")]
     public Vector3 respawnPosition = new Vector3(5f, 3f, 6f);
 
-    [Header("Durée du chrono (en secondes)")]
-    public float duration = 120f;
+    [Header("Référence du Timer")]
+    [Tooltip("GameObject contenant le script Timer")]
+    public Timer timerScript;
 
     private float timeLeft;
     private bool isRunning = false;
@@ -40,13 +39,25 @@ public class CountdownUI : MonoBehaviour
                 player.position = respawnPosition;
             }
 
+            if (timerScript != null)
+            {
+                timerScript.StartTimer();
+            }
+
             StartCountdown();
         }
     }
 
     public void StartCountdown()
     {
-        timeLeft = duration;
+        if (timerScript != null)
+        {
+            timeLeft = timerScript.ReturnTotalSeconds();
+        }
+        else
+        {
+            timeLeft = 60f;
+        }
         isRunning = true;
     }
 }

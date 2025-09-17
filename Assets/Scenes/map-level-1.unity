@@ -34953,6 +34953,17 @@ RectTransform:
   m_CorrespondingSourceObject: {fileID: 1594506253673570204, guid: ff83fa5e49e76504e8f2942e3ca54222, type: 3}
   m_PrefabInstance: {fileID: 1931356445}
   m_PrefabAsset: {fileID: 0}
+--- !u!114 &1072733758 stripped
+MonoBehaviour:
+  m_CorrespondingSourceObject: {fileID: 8187064391312095956, guid: ff83fa5e49e76504e8f2942e3ca54222, type: 3}
+  m_PrefabInstance: {fileID: 1931356445}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1072733756}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0ae392df589f1e8439316f88b61b2776, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!114 &1072733759
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -34967,7 +34978,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   player: {fileID: 1556157962}
   respawnPosition: {x: 5, y: 3, z: 6}
-  duration: 120
+  timerScript: {fileID: 1072733758}
 --- !u!1 &1110275813
 GameObject:
   m_ObjectHideFlags: 0
@@ -40444,7 +40455,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 1594506253673570205, guid: ff83fa5e49e76504e8f2942e3ca54222, type: 3}
       propertyPath: m_Name
-      value: DialMinutesSeconds
+      value: CountDown
       objectReference: {fileID: 0}
     - target: {fileID: 1594506253917794641, guid: ff83fa5e49e76504e8f2942e3ca54222, type: 3}
       propertyPath: m_Color.b
@@ -40468,15 +40479,15 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 8187064391312095956, guid: ff83fa5e49e76504e8f2942e3ca54222, type: 3}
       propertyPath: minutes
-      value: 2
-      objectReference: {fileID: 0}
-    - target: {fileID: 8187064391312095956, guid: ff83fa5e49e76504e8f2942e3ca54222, type: 3}
-      propertyPath: seconds
       value: 0
       objectReference: {fileID: 0}
     - target: {fileID: 8187064391312095956, guid: ff83fa5e49e76504e8f2942e3ca54222, type: 3}
+      propertyPath: seconds
+      value: 10
+      objectReference: {fileID: 0}
+    - target: {fileID: 8187064391312095956, guid: ff83fa5e49e76504e8f2942e3ca54222, type: 3}
       propertyPath: timeRemaining
-      value: 120
+      value: 10
       objectReference: {fileID: 0}
     - target: {fileID: 8187064391312095956, guid: ff83fa5e49e76504e8f2942e3ca54222, type: 3}
       propertyPath: minutesDisplay
