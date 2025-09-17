@@ -33618,7 +33618,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8450d257031867d4d8b47bbe9b0a2e61, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  targetSceneName: Credits
+  targetSceneName: map-level-2
   oneShot: 1
 --- !u!61 &774243686
 BoxCollider2D:
@@ -35184,14 +35184,26 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 571758f1c7872e9419d25eaab33255ec, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  wallsMaps: []
-  boxMaps: []
-  box2Maps: []
-  ladderMaps: []
-  vaseMaps: []
-  box3Maps: []
-  chestMaps: []
+  wallsMaps:
+  - {fileID: 387446653}
+  - {fileID: 858021135}
+  - {fileID: 886150088}
+  - {fileID: 1940508632}
+  - {fileID: 1827599541}
+  boxMaps:
+  - {fileID: 1841604174}
+  box2Maps:
+  - {fileID: 656638841}
+  ladderMaps:
+  - {fileID: 1385400454}
+  vaseMaps:
+  - {fileID: 1806419309}
+  box3Maps:
+  - {fileID: 30735443}
+  chestMaps:
+  - {fileID: 1484588948}
   updateInterval: 1
+  hideAllByDefault: 1
 --- !u!4 &1198216933
 Transform:
   m_ObjectHideFlags: 0
