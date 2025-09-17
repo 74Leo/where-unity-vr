@@ -35203,6 +35203,7 @@ MonoBehaviour:
   chestMaps:
   - {fileID: 1484588948}
   updateInterval: 1
+  hideAllByDefault: 1
 --- !u!4 &1198216933
 Transform:
   m_ObjectHideFlags: 0

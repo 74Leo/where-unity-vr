@@ -14,6 +14,7 @@ public class TilemapVisibilityController : MonoBehaviour
 
     [Header("Configuration")]
     public float updateInterval = 1f;
+    public bool hideAllByDefault = true;
     
     private int currentPlayerCount = 0;
 
@@ -102,12 +103,19 @@ public class TilemapVisibilityController : MonoBehaviour
 
         if (visible)
         {
-            tilemap.color = new Color(1f, 1f, 1f, 1f);
+            if (hideAllByDefault)
+            {
+                tilemap.color = new Color(255f, 255f, 255f, 0f);
+            }
+            else
+            {
+                tilemap.color = new Color(255f, 255f, 255f, 1f);
+            }
             EnableTilemapCollisions(tilemap);
         }
         else
         {
-            tilemap.color = new Color(1f, 1f, 1f, 0f);
+            tilemap.color = new Color(255f, 255f, 255f, 0f);
             DisableTilemapCollisions(tilemap);
         }
     }
