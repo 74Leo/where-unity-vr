@@ -1,6 +1,4 @@
 using UnityEngine;
-using UnityEngine.SceneManagement;
-using System.Collections;
 
 public class EndLevel : MonoBehaviour
 {
@@ -18,40 +16,20 @@ public class EndLevel : MonoBehaviour
         if (!other.CompareTag("Player")) return;
 
         used = true;
-        StartCoroutine(LoadSceneWithFade());
+        LoadNextScene();
     }
 
-    IEnumerator LoadSceneWithFade()
+    void LoadNextScene()
     {
         if (string.IsNullOrEmpty(targetSceneName))
         {
             Debug.LogError("[EndLevel] targetSceneName est vide.");
             used = false;
-            yield break;
+            return;
         }
 
-        if (FadeScreen.Instance != null)
-            yield return FadeScreen.Instance.FadeOut();
-
-        AsyncOperation op = SceneManager.LoadSceneAsync(targetSceneName, LoadSceneMode.Single);
-        op.allowSceneActivation = false;
-
-        while (op.progress < 0.9f)
-            yield return null;
-
-        if (FadeScreen.Instance != null)
-            FadeScreen.Instance.SetAlpha(1f);
-
-        op.allowSceneActivation = true;
-        while (!op.isDone)
-            yield return null;
-
-        yield return null;
-        yield return new WaitForEndOfFrame();
-
-        if (FadeScreen.Instance != null)
-            yield return FadeScreen.Instance.FadeIn();
-
+        FadeScreen.LoadSceneWithFadeAsync(targetSceneName);
+        
         if (!oneShot) used = false;
     }
 }

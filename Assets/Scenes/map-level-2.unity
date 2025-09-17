@@ -35213,6 +35213,7 @@ MonoBehaviour:
     m_Bits: 256
   outWidth: 1920
   outHeight: 1080
+  nameImage: map_level_one_export
 --- !u!4 &1280368645
 Transform:
   m_ObjectHideFlags: 0
