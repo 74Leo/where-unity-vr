@@ -33618,7 +33618,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: 8450d257031867d4d8b47bbe9b0a2e61, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  targetSceneName: map-level-2
+  targetSceneName: Credits
   oneShot: 1
 --- !u!61 &774243686
 BoxCollider2D:
@@ -37228,14 +37228,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   mapBottomLeft: {x: 0, y: 0}
   mapTopRight: {x: 100, y: 100}
+  autoDetectMapBounds: 1
   playerTransform: {fileID: 1556157962}
   xPercentage: 0
   yPercentage: 0
   serverUrl: http://localhost:3001
   roomId: 
   playerPseudo: Unity
-  isConnected: 0
-  isInRoom: 0
 --- !u!1 &1616421333
 GameObject:
   m_ObjectHideFlags: 0
