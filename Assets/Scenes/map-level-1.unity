@@ -33620,6 +33620,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   targetSceneName: Credits
   oneShot: 1
+  serverUrl: https://where-server-1.onrender.com
 --- !u!61 &774243686
 BoxCollider2D:
   m_ObjectHideFlags: 0
@@ -34956,6 +34957,8 @@ MonoBehaviour:
   player: {fileID: 1556157962}
   respawnPosition: {x: 5, y: 3, z: 6}
   timerScript: {fileID: 1072733758}
+  serverUrl: https://where-server-1.onrender.com
+  sendInterval: 1
 --- !u!1 &1110275813
 GameObject:
   m_ObjectHideFlags: 0
@@ -36220,7 +36223,7 @@ AudioSource:
   m_audioClip: {fileID: 0}
   m_Resource: {fileID: 8300000, guid: 44d6157a0d4fb7a4481b4a0466507d33, type: 3}
   m_PlayOnAwake: 1
-  m_Volume: 1
+  m_Volume: 0.7
   m_Pitch: 1
   Loop: 1
   Mute: 0
