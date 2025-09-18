@@ -59,8 +59,7 @@ public class PlayerPositionCalculator : MonoBehaviour
                 Debug.Log($"[PlayerPositionCalculator] RoomId récupéré depuis SocketPinClient: {roomId}");
             }
         }
-        
-        // Rejoindre la room si on a le roomId et qu'on est connecté mais pas encore dans la room
+            // Rejoindre la room si on a le roomId et qu'on est connecté mais pas encore dans la room
         // (une seule fois, pas en boucle)
         if (!string.IsNullOrEmpty(roomId) && isConnected && !isInRoom && !joiningRoom)
         {

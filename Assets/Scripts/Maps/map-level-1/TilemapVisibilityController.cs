@@ -99,13 +99,15 @@ public class TilemapVisibilityController : MonoBehaviour
             {
                 tilemap.color = new Color(1f, 1f, 1f, 1f);
             }
-            EnableTilemapCollisions(tilemap);
         }
         else
         {
+            
             tilemap.color = new Color(1f, 1f, 1f, 0f);
-            DisableTilemapCollisions(tilemap);
         }
+        
+        //on laisse les collisions actives sinon les joueurs ne peuvent pas se déplacer
+        EnableTilemapCollisions(tilemap);
     }
 
     void EnableTilemapCollisions(Tilemap tilemap)

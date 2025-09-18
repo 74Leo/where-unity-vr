@@ -53,7 +53,7 @@ public class PlayerMovement : MonoBehaviour
 
   void FixedUpdate()
   {
-    rb.MovePosition(rb.position + movement * speed * Time.fixedDeltaTime);
+    rb.linearVelocity = movement * speed;
   }
 
   private void OnCollisionEnter2D(Collision2D collision)
