@@ -12,7 +12,7 @@ public class RealtimeSender : MonoBehaviour
 
     private Transform playerTransform;
 
-    public string serverUrl = "http://localhost:3001";
+    public string serverUrl = "https://where-server-1.onrender.com";
     public string roomId = "room-001";
     public float sendHz = 15f;
 

@@ -10,7 +10,7 @@ using SocketIOClient;
 public class SocketPinClient : MonoBehaviour
 {
     [Header("Socket.IO")]
-    public string serverUrl = "http://localhost:3001";
+    public string serverUrl = "https://where-server-1.onrender.com";
 
     [Header("UI")]
     public Text pinText;
