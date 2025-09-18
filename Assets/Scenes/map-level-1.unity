@@ -37199,13 +37199,43 @@ PrefabInstance:
     - targetCorrespondingSourceObject: {fileID: 4323587223556375368, guid: ceedb6ea69f294744ba5bcc06520aaf6, type: 3}
       insertIndex: -1
       addedObject: {fileID: 476087720}
-    m_AddedComponents: []
+    m_AddedComponents:
+    - targetCorrespondingSourceObject: {fileID: 68451343271293634, guid: ceedb6ea69f294744ba5bcc06520aaf6, type: 3}
+      insertIndex: -1
+      addedObject: {fileID: 1556157964}
   m_SourcePrefab: {fileID: 100100000, guid: ceedb6ea69f294744ba5bcc06520aaf6, type: 3}
 --- !u!4 &1556157962 stripped
 Transform:
   m_CorrespondingSourceObject: {fileID: 4323587223556375368, guid: ceedb6ea69f294744ba5bcc06520aaf6, type: 3}
   m_PrefabInstance: {fileID: 1556157961}
   m_PrefabAsset: {fileID: 0}
+--- !u!1 &1556157963 stripped
+GameObject:
+  m_CorrespondingSourceObject: {fileID: 68451343271293634, guid: ceedb6ea69f294744ba5bcc06520aaf6, type: 3}
+  m_PrefabInstance: {fileID: 1556157961}
+  m_PrefabAsset: {fileID: 0}
+--- !u!114 &1556157964
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1556157963}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6c3c00ef3bda28c4fa2261ad9e53d246, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  mapBottomLeft: {x: 0, y: 0}
+  mapTopRight: {x: 100, y: 100}
+  playerTransform: {fileID: 1556157962}
+  xPercentage: 0
+  yPercentage: 0
+  serverUrl: http://localhost:3001
+  roomId: 
+  playerPseudo: Unity
+  isConnected: 0
+  isInRoom: 0
 --- !u!1 &1616421333
 GameObject:
   m_ObjectHideFlags: 0

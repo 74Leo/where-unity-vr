@@ -403,6 +403,23 @@ public class SocketPinClient : MonoBehaviour
         UpdateUIWithCurrentData();
     }
 
+    [ContextMenu("Connecter PlayerPositionCalculator")]
+    public void ConnectPlayerPositionCalculator()
+    {
+        var calculator = FindObjectOfType<PlayerPositionCalculator>();
+        if (calculator != null)
+        {
+            calculator.SetRoomId(currentRoomId);
+            calculator.SetPlayerPseudo("JoueurUnity");
+            calculator.ConnectToServer();
+            Debug.Log("[SocketPinClient] PlayerPositionCalculator connecté avec roomId: " + currentRoomId);
+        }
+        else
+        {
+            Debug.LogWarning("[SocketPinClient] PlayerPositionCalculator non trouvé dans la scène");
+        }
+    }
+
     public void SubscribeToRoomPlayers(System.Action<SocketIOResponse> callback)
     {
         if (client != null)
