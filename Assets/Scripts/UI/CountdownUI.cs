@@ -1,4 +1,7 @@
 using UnityEngine;
+using UnityEngine;
+using UnityEngine.Networking;
+using System.Collections;
 //using UnityEngine.UI;
 //using TMPro;
 
@@ -15,8 +18,16 @@ public class CountdownUI : MonoBehaviour
     [Tooltip("GameObject contenant le script Timer")]
     public Timer timerScript;
 
+    [Header("Configuration Web")]
+    [Tooltip("URL du serveur")]
+    public string serverUrl = "https://where-server-1.onrender.com";
+    
+    [Tooltip("Intervalle d'envoi du timer (en secondes)")]
+    public float sendInterval = 1f;
+
     private float timeLeft;
     private bool isRunning = false;
+    private float lastSendTime = 0f;
     
     void Start()
     {
@@ -29,10 +40,18 @@ public class CountdownUI : MonoBehaviour
 
         timeLeft -= Time.deltaTime;
 
+        if (Time.time - lastSendTime >= sendInterval)
+        {
+            StartCoroutine(SendTimerUpdate());
+            lastSendTime = Time.time;
+        }
+
         if (timeLeft <= 0f)
         {
             timeLeft = 0f;
             isRunning = false;
+
+            StartCoroutine(SendTimerUpdate());
 
             if (player != null)
             {
@@ -59,6 +78,31 @@ public class CountdownUI : MonoBehaviour
             timeLeft = 60f;
         }
         isRunning = true;
+        
+        StartCoroutine(SendTimerUpdate());
+    }
+
+    IEnumerator SendTimerUpdate()
+    {
+        int minutes = Mathf.FloorToInt(timeLeft / 60f);
+        int seconds = Mathf.FloorToInt(timeLeft % 60f);
+        
+        string jsonData = $"{{\"event\":\"timer:update\",\"timeLeft\":{timeLeft},\"minutes\":{minutes},\"seconds\":{seconds},\"isRunning\":{(isRunning ? "true" : "false")}}}";
+        
+        using (UnityWebRequest request = new UnityWebRequest(serverUrl + "/timer", "POST"))
+        {
+            byte[] bodyRaw = System.Text.Encoding.UTF8.GetBytes(jsonData);
+            request.uploadHandler = new UploadHandlerRaw(bodyRaw);
+            request.downloadHandler = new DownloadHandlerBuffer();
+            request.SetRequestHeader("Content-Type", "application/json");
+
+            yield return request.SendWebRequest();
+
+            if (request.result != UnityWebRequest.Result.Success)
+            {
+                Debug.LogError("[CountdownUI] Erreur lors de l'envoi du timer: " + request.error);
+            }
+        }
     }
 }
 

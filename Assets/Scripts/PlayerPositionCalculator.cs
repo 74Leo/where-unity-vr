@@ -20,7 +20,7 @@ public class PlayerPositionCalculator : MonoBehaviour
     [SerializeField] private float yPercentage;
 
     [Header("Configuration Socket.IO")]
-    [SerializeField] private string serverUrl = "http://localhost:3001";
+    [SerializeField] private string serverUrl = "https://where-server-1.onrender.com";
     [SerializeField] private string roomId = "";
     [SerializeField] private string playerPseudo = "";
 

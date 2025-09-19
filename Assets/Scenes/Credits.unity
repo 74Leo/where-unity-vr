@@ -153,8 +153,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 1}
   m_AnchorMax: {x: 0.5, y: 1}
-  m_AnchoredPosition: {x: -0.0074921, y: -3531.2}
-  m_SizeDelta: {x: 2331.1, y: 7062.5}
+  m_AnchoredPosition: {x: -0.0074921, y: -3733.3018}
+  m_SizeDelta: {x: 2331.1, y: 7466.6}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &116990005
 MonoBehaviour:
@@ -196,15 +196,16 @@ MonoBehaviour:
     Adam <color=#AAAAAA>\"shad0wz8910\"</color></size>\n<size=48>BENOUN Railas <color=#AAAAAA>\"raylee64\"</color></size>\n<size=48>AOUADI
     Lina <color=#AAAAAA>\"lili011.\"</color></size>\n\n<size=72><b>- Product Owner
     -</b></size>\n<size=48>JOULLIN Maxime</size>\n<size=48>PENEA Robin</size>\n<size=48>LEBRUN
-    Thomas</size>\n<size=48>SOURICE Valentin</size>\n\n<size=72><b>- Musique -</b></size>\n<size=48>LAMBD\u03BB</size>\n\n<size=72><b>-
+    Thomas</size>\n<size=48>SOURICE Valentin</size>\n\n<size=72><b>- Musiques -</b></size>\n<size=48>LAMBD\u03BB</size>\n\n<size=72><b>-
     Technologies -</b></size>\n<size=48>Unity 6 \u2022 6000.0.57f1 LTS</size>\n<size=48>Version
     Control : Git \u2022 GitHub</size>\n\n<size=72><b>- Assets-</b></size>\n<SIZE=48>Personnage\n<I>Universal
     LPC Spritesheet Generator</I></SIZE>\n\n<SIZE=48>D\xE9cors\n<I>Pixel Dungeon
-    Asset Pack \u2022 CRAFTPIX.NET</I></SIZE>\n\n<size=72><b>- Font -</b></size>\n<SIZE=48>Retro
-    Gaming\n<I>BY Daymarius</I></SIZE>\n\n<SIZE=48>Medieval Sharp\n<I>BY Wojciech
-    Kalinowski</I></SIZE>\n\n<size=72><b>- Outils -</b></size>\n<size=48>Notion \u2022
-    Discord</size>\n\n<size=72><b>- Remerciements -</b></size>\n<size=48>La communaut\xE9,
-    les testeurs</size>\n\n<size=72><b>- Mentions L\xE9gales -</b></size>\n<size=36>Certains
+    Asset Pack \u2022 CRAFTPIX.NET</I></SIZE>\n\n<SIZE=48>UI\n<I>Simple Fantasy GUI
+    \u2022 Nayrissa</I>\n<I>TimersMadeEasyLite \u2022 GolemiteGames</I></SIZE>\n\n<size=72><b>-
+    Fonts -</b></size>\n<SIZE=48>Retro Gaming\n<I>BY Daymarius</I></SIZE>\n\n<SIZE=48>Medieval
+    Sharp\n<I>BY Wojciech Kalinowski</I></SIZE>\n\n<size=72><b>- Outils -</b></size>\n<size=48>Notion
+    \u2022 Discord</size>\n\n<size=72><b>- Remerciements -</b></size>\n<size=48>La
+    communaut\xE9, les testeurs</size>\n\n<size=72><b>- Mentions L\xE9gales -</b></size>\n<size=36>Certains
     assets sous licences CC-BY / CC0 \u2022 Voir \u201CCredits.txt\u201D</size>\n\n<size=42>Coding
     Factory M2I - ESIEE-IT</size>\n<size=42><color=#AAAAAA>\xA9 2025 Where. Tous
     droits r\xE9serv\xE9s.</color></size>"
@@ -390,8 +391,8 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0, y: 0}
   m_AnchorMax: {x: 1, y: 0}
-  m_AnchoredPosition: {x: 0, y: -3531.2048}
-  m_SizeDelta: {x: 0, y: 7062.408}
+  m_AnchoredPosition: {x: 0, y: -3733.3013}
+  m_SizeDelta: {x: 0, y: 7466.603}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!95 &759055088
 Animator:
@@ -541,7 +542,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -0.0074463, y: 3281.3}
+  m_AnchoredPosition: {x: -0.0074463, y: 3483}
   m_SizeDelta: {x: 500, y: 500}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1437064801
@@ -613,7 +614,7 @@ RectTransform:
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
   m_AnchorMin: {x: 0.5, y: 0.5}
   m_AnchorMax: {x: 0.5, y: 0.5}
-  m_AnchoredPosition: {x: -614, y: -3131}
+  m_AnchoredPosition: {x: -614, y: -3338}
   m_SizeDelta: {x: 428.719, y: 240.028}
   m_Pivot: {x: 0.5, y: 0.5}
 --- !u!114 &1821288946
