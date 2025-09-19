@@ -37235,7 +37235,7 @@ MonoBehaviour:
   playerTransform: {fileID: 1556157962}
   xPercentage: 0
   yPercentage: 0
-  serverUrl: http://localhost:3001
+  serverUrl: https://where-server-1.onrender.com
   roomId: 
   playerPseudo: Unity
 --- !u!1 &1616421333
